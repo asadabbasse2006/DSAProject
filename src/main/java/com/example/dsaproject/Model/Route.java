@@ -1,6 +1,6 @@
 package com.example.dsaproject.Model;
 
-import com.example.dsaproject.Service.databaseManager;
+import com.example.dsaproject.DAO.databaseManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

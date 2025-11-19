@@ -2,20 +2,24 @@ package com.example.dsaproject.Controllers;
 
 // Packages import
 import com.example.dsaproject.Model.Admin;
-import com.example.dsaproject.Model.Driver;
 import com.example.dsaproject.Model.User;
 import com.example.dsaproject.AlertMessage;
-import com.example.dsaproject.Service.databaseManager;
+import com.example.dsaproject.DAO.databaseManager;
 
 //JavaFX libraries
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 //SQL Libraries
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class loginController {
     @FXML private TextField emailField;
@@ -76,7 +80,13 @@ public class loginController {
         }
     }
 
-    public void handleSignup(){
-
+    public void handleSignup(ActionEvent event){
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/example/dsaproject/signup.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root, 1200, 800));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

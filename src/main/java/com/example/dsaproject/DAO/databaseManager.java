@@ -1,4 +1,4 @@
-package com.example.dsaproject.Service;
+package com.example.dsaproject.DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
