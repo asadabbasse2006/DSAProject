@@ -108,5 +108,13 @@ public class signupController {
         hiddenPasswordField.setVisible(true);
         showPasswordField.setVisible(false);
     }
+
+    public void handleSignup(){
+
+    }
+
+    public void handleLogin(){
+
+    }
 }
 
