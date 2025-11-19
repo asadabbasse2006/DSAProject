@@ -18,96 +18,45 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class loginController {
-    @FXML private ComboBox<String> roleComboBox;
-    @FXML private TextField usernameField;
-    @FXML private PasswordField hiddenPasswordField;
-    @FXML private TextField showPasswordField;
-    @FXML private CheckBox showPasswordCheckBox;
-    @FXML private Button loginButton;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private Button adminLogin;
+    @FXML private Button studentLogin;
 
     private Connection connect;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private final AlertMessage alertMessage = new AlertMessage();
 
-    @FXML public void initialize() {
-        // Initialize combo box values
-        roleComboBox.getItems().addAll("Admin", "User", "Driver");
-        roleComboBox.setValue("User");
-    }
-
-    @FXML
-    public void loginAccount() {
-        String role = roleComboBox.getValue();
-        String username = usernameField.getText();
-        String password = hiddenPasswordField.isVisible()
-                ? hiddenPasswordField.getText()
-                : showPasswordField.getText();
-
-        if (username.isEmpty() || password.isEmpty() || role == null) {
-            alertMessage.errorMessage("Please fill in all fields and select a role!");
-            return;
+    public void handleStudentLogin(){
+        String email = emailField.getText();
+        String password = passwordField.getText();
+        if(email.isEmpty() || password.isEmpty()){
+            alertMessage.errorMessage("Invalid Credentials....");
         }
-
-        String sql = "";
-        switch (role.toLowerCase()) {
-            case "admin":
-                sql = "SELECT * FROM admin WHERE admin_username = ? AND password = ?";
-                break;
-            case "user":
-                sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-                break;
-            case "driver":
-                sql = "SELECT * FROM drivers WHERE username = ? AND password = ?";
-                break;
-            default:
-                alertMessage.errorMessage("Invalid role selected!");
-                return;
-        }
-
+        String sql = "SELECT * FROM users WHERE email = ?, password = ?";
         connect = databaseManager.getConnection();
-        try {
-            preparedStatement = connect.prepareStatement(sql);
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                switch (role.toLowerCase()) {
-                    case "admin":
-                        Admin.username = username;
-                        Admin.id = resultSet.getInt("id");
-                        break;
-                    case "user":
-                        User.email = username;
-                        User.id = resultSet.getInt("user_id");
-                        break;
-                    case "driver":
-                        Driver.username = username;
-                        Driver.id = resultSet.getInt("drivers_id");
-                        break;
-                }
-
-                alertMessage.successMessage(role + " login successful!");
-
-            } else {
-                alertMessage.errorMessage("Incorrect username or password!");
+        try(PreparedStatement ps = connect.prepareStatement(sql)){
+            ps.setString(1,email);
+            ps.setString(2,password);
+            ResultSet result = ps.executeQuery();
+            if (result.next()){
+                User.email = email;
+                User.password = password;
+                alertMessage.successMessage("Successfully Logged In");
+            }else{
+                alertMessage.errorMessage("Incorrect username or password");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            alertMessage.errorMessage("Database error: " + e.getMessage());
+        }catch (Exception e){
+            alertMessage.errorMessage("Error: " + e.getMessage());
         }
     }
-    @FXML
-    public void togglePasswordVisibility() {
-        if (showPasswordCheckBox.isSelected()) {
-            showPasswordField.setText(hiddenPasswordField.getText());
-            showPasswordField.setVisible(true);
-            hiddenPasswordField.setVisible(false);
-        } else {
-            hiddenPasswordField.setText(showPasswordField.getText());
-            showPasswordField.setVisible(false);
-            hiddenPasswordField.setVisible(true);
-        }
+
+    public void handleAdminLogin(){
+
+    }
+
+    public void handleSignup(){
+
     }
 }
