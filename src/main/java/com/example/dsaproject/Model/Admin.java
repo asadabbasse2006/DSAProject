@@ -2,14 +2,15 @@ package com.example.dsaproject.Model;
 
 public class Admin {
     public static int id;
-    public static String username;
+    public static String email;
+    public static String password;
     public static String name;
     public static String licenseNo;
     public static String phoneNo;
 
-    public Admin(int id, String username,String name,String licenseNo,String phoneNo) {
+    public Admin(int id, String email,String name,String licenseNo,String phoneNo) {
         Admin.id = id;
-        Admin.username = username;
+        Admin.email = email;
         Admin.name = name;
         Admin.licenseNo = licenseNo;
         Admin.phoneNo = phoneNo;
@@ -23,12 +24,12 @@ public class Admin {
         Admin.id = id;
     }
 
-    public static String getUsername() {
-        return username;
+    public static String getEmail() {
+        return email;
     }
 
-    public static void setUsername(String username) {
-        Admin.username = username;
+    public static void setEmail(String email) {
+        Admin.email = email;
     }
 
     public static String getName() {

@@ -34,7 +34,7 @@ public class loginController {
         if(email.isEmpty() || password.isEmpty()){
             alertMessage.errorMessage("Invalid Credentials....");
         }
-        String sql = "SELECT * FROM users WHERE email = ?, password = ?";
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
         connect = databaseManager.getConnection();
         try(PreparedStatement ps = connect.prepareStatement(sql)){
             ps.setString(1,email);
@@ -53,7 +53,27 @@ public class loginController {
     }
 
     public void handleAdminLogin(){
-
+        String email = emailField.getText();
+        String password = passwordField.getText();
+        if(email.isEmpty() || password.isEmpty()){
+            alertMessage.errorMessage("Invalid Credentials....");
+        }
+        String sql = "SELECT * FROM admin WHERE admin_username = ? AND password = ?";
+        connect = databaseManager.getConnection();
+        try(PreparedStatement ps = connect.prepareStatement(sql)){
+            ps.setString(1,email);
+            ps.setString(2,password);
+            ResultSet result = ps.executeQuery();
+            if (result.next()){
+                Admin.email = email;
+                Admin.password = password;
+                alertMessage.successMessage("Successfully Logged In");
+            }else{
+                alertMessage.errorMessage("Incorrect username or password");
+            }
+        }catch (Exception e){
+            alertMessage.errorMessage("Error: " + e.getMessage());
+        }
     }
 
     public void handleSignup(){
