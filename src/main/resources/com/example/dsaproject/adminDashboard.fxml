@@ -3,56 +3,44 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.dsaproject.Controllers.adminDashboardController"
-            style="-fx-background-color: #f3f4f6;">
+            stylesheets="@styles.css">
 
-    <!-- Top Navigation Bar -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #1f2937; -fx-padding: 15;">
-            <Label text="⚙️ COMSATS Transport - Admin Portal" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
-
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="dashboard-header">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+            <Label text="Admin Dashboard" styleClass="dashboard-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-
-            <Label text="Admin User" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
-
-            <Button fx:id="logoutBtn" text="Logout" onAction="#handleLogout"
-                    style="-fx-background-color: #374151; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;"/>
+            <Label fx:id="welcomeLabel" styleClass="welcome-label"/>
+            <Button text="Logout" onAction="#handleLogout" styleClass="secondary-button"/>
         </HBox>
     </top>
 
-    <!-- Main Content -->
-    <center>
-        <VBox spacing="0" style="-fx-background-color: #f3f4f6;">
-            <!-- Tab Navigation -->
-            <HBox spacing="0" style="-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;">
-                <padding>
-                    <Insets top="0" right="25" bottom="0" left="25"/>
-                </padding>
+    <left>
+        <VBox spacing="10" styleClass="sidebar">
+            <padding>
+                <Insets top="20" right="15" bottom="20" left="15"/>
+            </padding>
 
-                <Button fx:id="overviewTab" text="🏠 Overview" onAction="#showOverview"
-                        style="-fx-background-color: transparent; -fx-padding: 18 25; -fx-font-size: 15px; -fx-border-width: 0 0 3 0; -fx-border-color: #2563eb; -fx-text-fill: #2563eb; -fx-font-weight: bold; -fx-cursor: hand;"/>
-
-                <Button fx:id="routesTab" text="📍 Routes" onAction="#showRoutes"
-                        style="-fx-background-color: transparent; -fx-padding: 18 25; -fx-font-size: 15px; -fx-text-fill: #6b7280; -fx-cursor: hand;"/>
-
-                <Button fx:id="busesTab" text="🚌 Buses" onAction="#showBuses"
-                        style="-fx-background-color: transparent; -fx-padding: 18 25; -fx-font-size: 15px; -fx-text-fill: #6b7280; -fx-cursor: hand;"/>
-
-                <Button fx:id="driversTab" text="👥 Drivers" onAction="#showDrivers"
-                        style="-fx-background-color: transparent; -fx-padding: 18 25; -fx-font-size: 15px; -fx-text-fill: #6b7280; -fx-cursor: hand;"/>
-            </HBox>
-
-            <!-- Content Area -->
-            <ScrollPane fitToWidth="true" style="-fx-background: #f3f4f6; -fx-background-color: #f3f4f6;">
-                <StackPane fx:id="contentArea">
-                    <padding>
-                        <Insets top="25" right="25" bottom="25" left="25"/>
-                    </padding>
-                </StackPane>
-            </ScrollPane>
+            <Button text="📊 Dashboard" onAction="#showDashboard" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="🗺️ Manage Routes" onAction="#showRoutes" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="🚌 Manage Buses" onAction="#showBuses" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="👤 Manage Drivers" onAction="#showDrivers" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="📋 View Bookings" onAction="#showBookings" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="📈 Reports" onAction="#showReports" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Separator/>
+            <Button text="⏳ Waiting List" onAction="#showWaitingList" styleClass="sidebar-button" maxWidth="Infinity"/>
         </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- Dynamic content loaded here -->
+        </StackPane>
     </center>
 </BorderPane>

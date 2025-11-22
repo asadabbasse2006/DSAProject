@@ -1,5 +1,4 @@
 package com.example.dsaproject.Util;
-
 import com.example.dsaproject.Model.User;
 
 public class SessionManager {
@@ -21,18 +20,6 @@ public class SessionManager {
 
     public User getCurrentUser() {
         return currentUser;
-    }
-
-    public boolean isLoggedIn() {
-        return currentUser != null;
-    }
-
-    public boolean isAdmin() {
-        return currentUser != null && "admin".equals(currentUser.getRole());
-    }
-
-    public boolean isStudent() {
-        return currentUser != null && "student".equals(currentUser.getRole());
     }
 
     public void logout() {

@@ -5,65 +5,69 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.dsaproject.Controllers.loginController"
-            style="-fx-background-color: linear-gradient(to bottom right, #2563eb, #1e40af);">
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.dsaproject.Controllers.LoginController"
+            stylesheets="@styles.css"
+            styleClass="root-pane">
+
+    <top>
+        <VBox alignment="CENTER" spacing="10" styleClass="header-box">
+            <padding>
+                <Insets top="30" bottom="20"/>
+            </padding>
+            <Label text="COMSATS University Islamabad" styleClass="header-title"/>
+            <Label text="Sahiwal Campus - Transport Management System" styleClass="header-subtitle"/>
+        </VBox>
+    </top>
 
     <center>
-        <VBox alignment="CENTER" maxWidth="450" spacing="20" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0, 0, 5);">
+        <VBox alignment="CENTER" spacing="20" maxWidth="400">
             <padding>
                 <Insets top="50" right="50" bottom="50" left="50"/>
             </padding>
 
-            <!-- Logo -->
-            <Label text="🚌" style="-fx-font-size: 60px;"/>
+            <Label text="Login" styleClass="form-title"/>
 
-            <!-- Title -->
-            <VBox alignment="CENTER" spacing="5">
-                <Label text="COMSATS Transport" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1f2937;"/>
-                <Label text="Sahiwal Campus" style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
+            <VBox spacing="15" styleClass="form-container">
+                <padding>
+                    <Insets top="30" right="40" bottom="30" left="40"/>
+                </padding>
+
+                <VBox spacing="5">
+                    <Label text="Email" styleClass="form-label"/>
+                    <TextField fx:id="emailField" promptText="Enter your email" styleClass="form-field"/>
+                </VBox>
+
+                <VBox spacing="5">
+                    <Label text="Password" styleClass="form-label"/>
+                    <PasswordField fx:id="passwordField" promptText="Enter your password" styleClass="form-field"/>
+                </VBox>
+
+                <HBox spacing="10" alignment="CENTER">
+                    <RadioButton fx:id="studentRadio" text="Student" selected="true" styleClass="radio-button">
+                        <toggleGroup>
+                            <ToggleGroup fx:id="userTypeGroup"/>
+                        </toggleGroup>
+                    </RadioButton>
+                    <RadioButton fx:id="adminRadio" text="Admin" toggleGroup="$userTypeGroup" styleClass="radio-button"/>
+                </HBox>
+
+                <Label fx:id="errorLabel" styleClass="error-label" visible="false"/>
+
+                <Button text="Login" onAction="#handleLogin" styleClass="primary-button" maxWidth="Infinity"/>
+
+                <Hyperlink text="Don't have an account? Sign up" onAction="#handleSignup" styleClass="link"/>
             </VBox>
-
-            <Separator prefWidth="200.0"/>
-
-            <!-- Email Field -->
-            <VBox spacing="8">
-                <Label text="Email" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <TextField fx:id="emailField" promptText="your.email@example.com"
-                           style="-fx-padding: 12; -fx-border-color: #d1d5db; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-size: 14px;"/>
-            </VBox>
-
-            <!-- Password Field -->
-            <VBox spacing="8">
-                <Label text="Password" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                <PasswordField fx:id="passwordField" promptText="••••••••"
-                               style="-fx-padding: 12; -fx-border-color: #d1d5db; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-size: 14px;"/>
-            </VBox>
-
-            <!-- Error Label -->
-            <Label fx:id="errorLabel" style="-fx-text-fill: #dc2626; -fx-font-size: 12px;" visible="false"/>
-
-            <!-- Login Buttons -->
-            <Button fx:id="studentLoginBtn" text="Login as Student" maxWidth="Infinity"
-                    onAction="#handleStudentLogin"
-                    style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 14; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;">
-                <font>
-                    <Font name="System Bold" size="14"/>
-                </font>
-            </Button>
-
-            <Button fx:id="adminLoginBtn" text="Login as Admin" maxWidth="Infinity"
-                    onAction="#handleAdminLogin"
-                    style="-fx-background-color: #4b5563; -fx-text-fill: white; -fx-padding: 14; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;">
-                <font>
-                    <Font name="System Bold" size="14"/>
-                </font>
-            </Button>
-
-            <!-- Signup Link -->
-            <Hyperlink fx:id="signupLink" text="Don't have an account? Sign Up"
-                       onAction="#handleSignup"
-                       style="-fx-text-fill: #2563eb; -fx-font-size: 13px;"/>
         </VBox>
     </center>
+
+    <bottom>
+        <HBox alignment="CENTER" styleClass="footer">
+            <padding>
+                <Insets top="20" bottom="20"/>
+            </padding>
+            <Label text="© 2024 COMSATS University | Data Structures Project" styleClass="footer-text"/>
+        </HBox>
+    </bottom>
 </BorderPane>

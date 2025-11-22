@@ -3,76 +3,50 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.dsaproject.Controllers.studentDashboardController"
-            style="-fx-background-color: #f3f4f6;">
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.dsaproject.Controllers.adminDashboardController"
+            stylesheets="@styles.css">
 
-    <!-- Top Navigation Bar -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2563eb; -fx-padding: 15;">
-            <Label text="🚌 COMSATS Transport" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
-
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="dashboard-header">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+            <Label text="Student Dashboard" styleClass="dashboard-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-
-            <Label fx:id="welcomeLabel" text="Welcome, Student" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
-
-            <Button fx:id="logoutBtn" text="Logout" onAction="#handleLogout"
-                    style="-fx-background-color: #1e40af; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;"/>
+            <Label fx:id="welcomeLabel" styleClass="welcome-label"/>
+            <Button text="Logout" onAction="#handleLogout" styleClass="secondary-button"/>
         </HBox>
     </top>
 
-    <!-- Main Content -->
-    <center>
-        <ScrollPane fitToWidth="true" style="-fx-background: #f3f4f6; -fx-background-color: #f3f4f6;">
-            <VBox spacing="25" style="-fx-background-color: #f3f4f6;">
+    <left>
+        <VBox spacing="10" styleClass="sidebar">
+            <padding>
+                <Insets top="20" right="15" bottom="20" left="15"/>
+            </padding>
+
+            <Button text="🏠 Home" onAction="#showRoutes" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="🗺️ View Routes" onAction="#showRoutes" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="🎫 Book Seat" onAction="#showRoutes" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="📋 My Bookings" onAction="#showRoutes" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="⏰ Bus Schedule" onAction="#showRoutes" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label text="Quick Stats" styleClass="sidebar-section-title"/>
+            <VBox spacing="5" styleClass="stats-box">
                 <padding>
-                    <Insets top="25" right="25" bottom="25" left="25"/>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
                 </padding>
-
-                <!-- Statistics Cards -->
-                <HBox spacing="20" alignment="CENTER">
-                    <!-- Active Bookings Card -->
-                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);" prefWidth="280">
-                        <Label text="Active Bookings" style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
-                        <Label fx:id="activeBookingsCount" text="2" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
-                    </VBox>
-
-                    <!-- Available Routes Card -->
-                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);" prefWidth="280">
-                        <Label text="Available Routes" style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
-                        <Label fx:id="availableRoutesCount" text="8" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
-                    </VBox>
-
-                    <!-- Waiting List Card -->
-                    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);" prefWidth="280">
-                        <Label text="Waiting List" style="-fx-font-size: 14px; -fx-text-fill: #6b7280;"/>
-                        <Label fx:id="waitingListCount" text="1" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
-                    </VBox>
-                </HBox>
-
-                <!-- Two Column Layout -->
-                <HBox spacing="20" HBox.hgrow="ALWAYS">
-                    <!-- Available Routes Panel -->
-                    <VBox spacing="15" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);">
-                        <Label text="📍 Available Routes" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f2937;"/>
-
-                        <ScrollPane fitToWidth="true" style="-fx-background: white; -fx-background-color: white;" prefHeight="400">
-                            <VBox fx:id="routesContainer" spacing="12"/>
-                        </ScrollPane>
-                    </VBox>
-
-                    <!-- My Bookings Panel -->
-                    <VBox spacing="15" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);">
-                        <Label text="📅 My Bookings" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f2937;"/>
-
-                        <ScrollPane fitToWidth="true" style="-fx-background: white; -fx-background-color: white;" prefHeight="400">
-                            <VBox fx:id="bookingsContainer" spacing="12"/>
-                        </ScrollPane>
-                    </VBox>
-                </HBox>
+                <Label fx:id="activeBookingsLabel" text="Active: 0" styleClass="stat-label"/>
+                <Label fx:id="availableRoutesLabel" text="Routes: 0" styleClass="stat-label"/>
             </VBox>
-        </ScrollPane>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- Dynamic content loaded here -->
+        </StackPane>
     </center>
 </BorderPane>

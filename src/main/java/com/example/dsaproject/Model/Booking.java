@@ -1,47 +1,36 @@
 package com.example.dsaproject.Model;
 
 public class Booking {
-    public static int bookingId;
-    public static int userId;
-    public static int routeId;
-    public static String status;
+    private int bookingId;
+    private int userId;
+    private String studentName;
+    private int busId;
+    private String busNo;
+    private int routeId;
+    private String routeName;
+    private String bookingDate;
+    private String status;
 
-    public Booking(int bookingId, int userId, int routeId, String status) {
-        Booking.bookingId = bookingId;
-        Booking.userId = userId;
-        Booking.routeId = routeId;
-        Booking.status = status;
+    public Booking(int bookingId, int userId, String studentName, int busId,
+                   String busNo, int routeId, String routeName, String bookingDate, String status) {
+        this.bookingId = bookingId;
+        this.userId = userId;
+        this.studentName = studentName;
+        this.busId = busId;
+        this.busNo = busNo;
+        this.routeId = routeId;
+        this.routeName = routeName;
+        this.bookingDate = bookingDate;
+        this.status = status;
     }
 
-    public static int getBookingId() {
-        return bookingId;
-    }
-
-    public static void setBookingId(int bookingId) {
-        Booking.bookingId = bookingId;
-    }
-
-    public static int getUserId() {
-        return userId;
-    }
-
-    public static void setUserId(int userId) {
-        Booking.userId = userId;
-    }
-
-    public static String getStatus() {
-        return status;
-    }
-
-    public static void setStatus(String status) {
-        Booking.status = status;
-    }
-
-    public static int getRouteId() {
-        return routeId;
-    }
-
-    public static void setRouteId(int routeId) {
-        Booking.routeId = routeId;
-    }
+    public int getBookingId() { return bookingId; }
+    public int getUserId() { return userId; }
+    public String getStudentName() { return studentName; }
+    public int getBusId() { return busId; }
+    public String getBusNo() { return busNo; }
+    public int getRouteId() { return routeId; }
+    public String getRouteName() { return routeName; }
+    public String getBookingDate() { return bookingDate; }
+    public String getStatus() { return status; }
 }

@@ -1,56 +1,28 @@
 package com.example.dsaproject.Model;
 
 public class Bus {
-    public static int busId;
-    public static String busNo;
-    public static int capacity;
-    public static int driverId;
-    public static int availableSeats;
+    private int busId;
+    private String busNo;
+    private int capacity;
+    private int driverId;
+    private String driverName;
 
-    public Bus(int busId, String busNo, int capacity, int driverId) {
-        Bus.busId = busId;
-        Bus.busNo = busNo;
-        Bus.capacity = capacity;
-        Bus.driverId = driverId;
+    public Bus(int busId, String busNo, int capacity, int driverId, String driverName) {
+        this.busId = busId;
+        this.busNo = busNo;
+        this.capacity = capacity;
+        this.driverId = driverId;
+        this.driverName = driverName;
     }
 
-    public static int getBusId() {
-        return busId;
-    }
+    public int getBusId() { return busId; }
+    public String getBusNo() { return busNo; }
+    public int getCapacity() { return capacity; }
+    public int getDriverId() { return driverId; }
+    public String getDriverName() { return driverName; }
 
-    public static void setBusId(int busId) {
-        Bus.busId = busId;
-    }
-
-    public static String getBusNo() {
-        return busNo;
-    }
-
-    public static void setBusNo(String busNo) {
-        Bus.busNo = busNo;
-    }
-
-    public static int getCapacity() {
-        return capacity;
-    }
-
-    public static void setCapacity(int capacity) {
-        Bus.capacity = capacity;
-    }
-
-    public static int getDriverId() {
-        return driverId;
-    }
-
-    public static void setDriverId(int driverId) {
-        Bus.driverId = driverId;
-    }
-
-    public static int getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public static void setAvailableSeats(int availableSeats) {
-        Bus.availableSeats = availableSeats;
+    @Override
+    public String toString() {
+        return busNo + " (Capacity: " + capacity + ")";
     }
 }
