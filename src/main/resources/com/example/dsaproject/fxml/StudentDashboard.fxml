@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.dsaproject.Controllers.studentDashboardController"
+            styleClass="dashboard-root">
+
+    <!-- Top Navigation Bar -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="dashboard-header">
+            <padding>
+                <Insets top="15" right="25" bottom="15" left="25"/>
+            </padding>
+
+            <!-- Logo/Title -->
+            <VBox spacing="2">
+                <Label text="🚌 COMSATS Transport" styleClass="dashboard-logo">
+                    <font>
+                        <Font name="System Bold" size="18"/>
+                    </font>
+                </Label>
+                <Label text="Student Portal" styleClass="dashboard-subtitle">
+                    <font>
+                        <Font size="11"/>
+                    </font>
+                </Label>
+            </VBox>
+
+            <!-- Spacer -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- User Info -->
+            <VBox alignment="CENTER_RIGHT" spacing="2">
+                <Label fx:id="welcomeLabel" text="Welcome, Student" styleClass="welcome-label">
+                    <font>
+                        <Font name="System Bold" size="13"/>
+                    </font>
+                </Label>
+                <Label fx:id="emailLabel" text="student@comsats.edu.pk" styleClass="email-label">
+                    <font>
+                        <Font size="11"/>
+                    </font>
+                </Label>
+            </VBox>
+
+            <!-- Logout Button -->
+            <Button text="Logout" onAction="#handleLogout" styleClass="logout-button">
+                <font>
+                    <Font size="12"/>
+                </font>
+            </Button>
+        </HBox>
+    </top>
+
+    <!-- Left Sidebar -->
+    <left>
+        <VBox spacing="8" styleClass="sidebar" minWidth="220" maxWidth="220">
+            <padding>
+                <Insets top="25" right="15" bottom="25" left="15"/>
+            </padding>
+
+            <!-- Navigation Buttons -->
+            <Label text="NAVIGATION" styleClass="sidebar-section-title">
+                <font>
+                    <Font name="System Bold" size="11"/>
+                </font>
+            </Label>
+
+            <Button fx:id="homeBtn" text="🏠  Home" onAction="#showHome"
+                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
+                <font>
+                    <Font size="13"/>
+                </font>
+            </Button>
+
+            <Button fx:id="routesBtn" text="🗺️  View Routes" onAction="#showRoutes"
+                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
+                <font>
+                    <Font size="13"/>
+                </font>
+            </Button>
+
+            <Button fx:id="bookingBtn" text="🎫  Book Seat" onAction="#showBooking"
+                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
+                <font>
+                    <Font size="13"/>
+                </font>
+            </Button>
+
+            <Button fx:id="myBookingsBtn" text="📋  My Bookings" onAction="#showMyBookings"
+                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
+                <font>
+                    <Font size="13"/>
+                </font>
+            </Button>
+
+            <Button fx:id="scheduleBtn" text="⏰  Bus Schedule" onAction="#showSchedule"
+                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
+                <font>
+                    <Font size="13"/>
+                </font>
+            </Button>
+
+            <Button fx:id="profileBtn" text="👤  My Profile" onAction="#showProfile"
+                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
+                <font>
+                    <Font size="13"/>
+                </font>
+            </Button>
+
+            <!-- Spacer -->
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Quick Stats -->
+            <Separator/>
+            <Label text="QUICK STATS" styleClass="sidebar-section-title">
+                <font>
+                    <Font name="System Bold" size="11"/>
+                </font>
+                <padding>
+                    <Insets top="10"/>
+                </padding>
+            </Label>
+
+            <VBox spacing="8" styleClass="stats-box">
+                <padding>
+                    <Insets top="12" right="12" bottom="12" left="12"/>
+                </padding>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="✓" styleClass="stat-icon">
+                        <font>
+                            <Font size="16"/>
+                        </font>
+                    </Label>
+                    <VBox spacing="2">
+                        <Label text="Active Bookings" styleClass="stat-label">
+                            <font>
+                                <Font size="10"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="activeBookingsLabel" text="0" styleClass="stat-value">
+                            <font>
+                                <Font name="System Bold" size="16"/>
+                            </font>
+                        </Label>
+                    </VBox>
+                </HBox>
+
+                <Separator/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="🚌" styleClass="stat-icon">
+                        <font>
+                            <Font size="16"/>
+                        </font>
+                    </Label>
+                    <VBox spacing="2">
+                        <Label text="Available Routes" styleClass="stat-label">
+                            <font>
+                                <Font size="10"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="availableRoutesLabel" text="0" styleClass="stat-value">
+                            <font>
+                                <Font name="System Bold" size="16"/>
+                            </font>
+                        </Label>
+                    </VBox>
+                </HBox>
+
+                <Separator/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="💰" styleClass="stat-icon">
+                        <font>
+                            <Font size="16"/>
+                        </font>
+                    </Label>
+                    <VBox spacing="2">
+                        <Label text="Total Spent" styleClass="stat-label">
+                            <font>
+                                <Font size="10"/>
+                            </font>
+                        </Label>
+                        <Label fx:id="totalSpentLabel" text="Rs. 0" styleClass="stat-value">
+                            <font>
+                                <Font name="System Bold" size="14"/>
+                            </font>
+                        </Label>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- Center Content Area -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <!-- Dynamic content loaded here -->
+        </StackPane>
+    </center>
+</BorderPane>
