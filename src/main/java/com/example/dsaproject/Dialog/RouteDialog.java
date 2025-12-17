@@ -1,90 +1,84 @@
 package com.example.dsaproject.Dialog;
 
-
-import com.example.dsaproject.Model.Route;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert.AlertType;
+import com.example.dsaproject.Model.Route;
 import com.example.dsaproject.Util.ValidationUtil;
-import java.util.Arrays;
+import javafx.stage.Modality;
 
 public class RouteDialog extends Dialog<Route> {
 
     private TextField routeNameField;
-    private TextField totalStopsField;
+    private TextField stopsCountField;
     private TextArea stopsArea;
-    private TextField distanceField;
     private Route existingRoute;
 
     public RouteDialog(Route route) {
+
+        initModality(Modality.APPLICATION_MODAL);
         this.existingRoute = route;
 
-        if (route == null) {
-            setTitle("Add New Route");
-            setHeaderText("Enter route details");
-        } else {
-            setTitle("Edit Route");
-            setHeaderText("Update route: " + route.getRouteName());
-        }
+        setTitle(route == null ? "Add New Route" : "Edit Route");
+        setHeaderText(route == null
+                ? "Enter route details"
+                : "Update route: " + route.getRouteName());
 
         ButtonType saveButtonType = new ButtonType(
-                route == null ? "Add" : "Update", ButtonBar.ButtonData.OK_DONE);
+                route == null ? "Add" : "Update",
+                ButtonBar.ButtonData.OK_DONE
+        );
         getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
         GridPane grid = new GridPane();
+        grid.setPadding(new Insets(20));
         grid.setHgap(15);
         grid.setVgap(12);
-        grid.setPadding(new Insets(20));
 
         routeNameField = new TextField();
         routeNameField.setPromptText("Route Name");
-        routeNameField.setPrefWidth(350);
 
-        totalStopsField = new TextField();
-        totalStopsField.setPromptText("Total Stops");
-
-        distanceField = new TextField();
-        distanceField.setPromptText("Distance (km)");
+        stopsCountField = new TextField();
+        stopsCountField.setPromptText("Total Stops");
 
         stopsArea = new TextArea();
-        stopsArea.setPromptText("Enter stops (one per line)");
-        stopsArea.setPrefRowCount(6);
+        stopsArea.setPromptText("Enter stops separated by commas");
+        stopsArea.setPrefRowCount(3);
 
         grid.add(new Label("Route Name:"), 0, 0);
         grid.add(routeNameField, 1, 0);
         grid.add(new Label("Total Stops:"), 0, 1);
-        grid.add(totalStopsField, 1, 1);
-        grid.add(new Label("Distance (km):"), 0, 2);
-        grid.add(distanceField, 1, 2);
-        grid.add(new Label("Stops:"), 0, 3);
-        grid.add(stopsArea, 1, 3);
+        grid.add(stopsCountField, 1, 1);
+        grid.add(new Label("Stops:"), 0, 2);
+        grid.add(stopsArea, 1, 2);
 
-        // Populate fields if editing
+        // Populate if editing
         if (route != null) {
             routeNameField.setText(route.getRouteName());
-            totalStopsField.setText(String.valueOf(route.getTotalStops()));
-            distanceField.setText(String.valueOf(route.getDistance()));
-            stopsArea.setText(String.join("\n", route.getStops()));
+            stopsCountField.setText(String.valueOf(route.getTotalStops()));
+            stopsArea.setText(route.getStops());
         }
 
         getDialogPane().setContent(grid);
 
-        setResultConverter(dialogButton -> {
-            if (dialogButton == saveButtonType) {
-                if (validateInputs()) {
-                    Route newRoute;
-                    if (existingRoute != null) {
-                        newRoute = existingRoute;
-                    } else {
-                        newRoute = new Route(0, "", 0);
-                    }
+        setResultConverter(button -> {
+            if (button == saveButtonType && validateInputs()) {
 
-                    newRoute.setRouteName(routeNameField.getText());
-                    newRoute.setTotalStops(Integer.parseInt(totalStopsField.getText()));
-                    newRoute.setDistance(Double.parseDouble(distanceField.getText()));
-                    newRoute.setStops(Arrays.asList(stopsArea.getText().split("\n")));
+                int totalStops = Integer.parseInt(stopsCountField.getText());
 
-                    return newRoute;
+                if (existingRoute != null) {
+                    existingRoute.setRouteName(routeNameField.getText());
+                    existingRoute.setTotalStops(totalStops);
+                    existingRoute.setStops(stopsArea.getText());
+                    return existingRoute;
+                } else {
+                    return new Route(
+                            0,
+                            routeNameField.getText(),
+                            totalStops,
+                            stopsArea.getText()
+                    );
                 }
             }
             return null;
@@ -92,29 +86,43 @@ public class RouteDialog extends Dialog<Route> {
     }
 
     private boolean validateInputs() {
-        if (!ValidationUtil.isNotEmpty(routeNameField.getText())) {
-            showError("Please enter route name");
+
+        if (!ValidationUtil.isValidName(routeNameField.getText())) {
+            showError("Route name is invalid");
             return false;
         }
 
-        if (!ValidationUtil.isPositiveNumber(totalStopsField.getText())) {
-            showError("Please enter valid number of stops");
+        if (stopsCountField.getText().isEmpty()) {
+            showError("Total stops cannot be empty");
             return false;
         }
 
-        if (!ValidationUtil.isNotEmpty(stopsArea.getText())) {
-            showError("Please enter at least one stop");
+        int stops;
+        try {
+            stops = Integer.parseInt(stopsCountField.getText());
+        } catch (NumberFormatException e) {
+            showError("Total stops must be a number");
+            return false;
+        }
+
+        if (stops <= 0) {
+            showError("Total stops must be greater than zero");
+            return false;
+        }
+
+        if (stopsArea.getText().isEmpty()) {
+            showError("Stops list cannot be empty");
             return false;
         }
 
         return true;
     }
 
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showError(String msg) {
+        Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Validation Error");
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 }

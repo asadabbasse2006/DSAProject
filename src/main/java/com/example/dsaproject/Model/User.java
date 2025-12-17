@@ -1,22 +1,16 @@
 package com.example.dsaproject.Model;
 
-import java.time.LocalDateTime;
-
-/**
- * User Model Class
- * Represents a user in the system (Student or Admin)
- */
 public class User {
     private int userId;
     private String name;
     private String email;
     private String password;
-    private String role;
-    private String phone;
-    private String address;
-    private LocalDateTime createdAt;
+    private String role; // "student" or "admin"
+    private String registrationId;
 
-    // Constructor
+    // Constructors
+    public User() {}
+
     public User(int userId, String name, String email, String role) {
         this.userId = userId;
         this.name = name;
@@ -24,16 +18,19 @@ public class User {
         this.role = role;
     }
 
-    // Full Constructor
-    public User(int userId, String name, String email, String password, String role,
-                String phone, String address) {
+    // Full constructor
+    public User(int userId, String name, String email, String password,
+                String role, String registrationId) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.phone = phone;
-        this.address = address;
+        this.registrationId = registrationId;
+    }
+
+    public User(int i, String name, String email, String student, String registrationId) {
+
     }
 
     // Getters and Setters
@@ -52,14 +49,10 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getRegistrationId() { return registrationId; }
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
+    }
 
     public boolean isAdmin() {
         return "admin".equalsIgnoreCase(role);
@@ -71,6 +64,11 @@ public class User {
 
     @Override
     public String toString() {
-        return name + " (" + email + ")";
+        return "User{" +
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }

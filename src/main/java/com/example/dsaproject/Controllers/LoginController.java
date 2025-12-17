@@ -1,16 +1,18 @@
 package com.example.dsaproject.Controllers;
 
+import com.example.dsaproject.Controllers.COMSATSTransport;
 import com.example.dsaproject.Dialog.SignupDialog;
-import com.example.dsaproject.Util.DatabaseManager;
+import com.example.dsaproject.Util.*;
+import com.example.dsaproject.Model.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
-import com.example.dsaproject.Model.User;
-import com.example.dsaproject.Util.SessionManager;
-import com.example.dsaproject.Util.AlertMessage;
-import com.example.dsaproject.Util.ValidationUtil;
 
+/**
+ * Controller for Login Screen
+ * Handles user authentication and navigation
+ */
 public class LoginController {
 
     @FXML private TextField emailField;
@@ -44,6 +46,11 @@ public class LoginController {
 
         // Set default selection
         studentRadio.setSelected(true);
+
+        // Set up toggle group
+        userTypeGroup = new ToggleGroup();
+        studentRadio.setToggleGroup(userTypeGroup);
+        adminRadio.setToggleGroup(userTypeGroup);
     }
 
     /**
@@ -66,10 +73,10 @@ public class LoginController {
         boolean isStudent = studentRadio.isSelected();
         String role = isStudent ? "student" : "admin";
 
-        // Authenticate user in separate thread (simulating async operation)
+        // Authenticate user in separate thread
         new Thread(() -> {
             try {
-                Thread.sleep(500); // Simulate network delay
+                Thread.sleep(300); // Simulate network delay
                 User user = dbManager.authenticateUser(email, password, role);
 
                 javafx.application.Platform.runLater(() -> {
@@ -171,5 +178,7 @@ public class LoginController {
         loginButton.setDisable(show);
         emailField.setDisable(show);
         passwordField.setDisable(show);
+        studentRadio.setDisable(show);
+        adminRadio.setDisable(show);
     }
 }

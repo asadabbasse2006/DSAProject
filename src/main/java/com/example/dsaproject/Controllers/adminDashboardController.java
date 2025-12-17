@@ -1,19 +1,13 @@
 package com.example.dsaproject.Controllers;
 
 import com.example.dsaproject.factory.AdminViewFactory;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.collections.*;
-import javafx.scene.chart.*;
 import com.example.dsaproject.Model.*;
 import com.example.dsaproject.Util.*;
 import com.example.dsaproject.Dialog.*;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 
-/**
- * Controller for Admin Dashboard
- * Handles all administrative operations
- */
 public class adminDashboardController {
 
     @FXML private Label welcomeLabel;
@@ -40,6 +34,16 @@ public class adminDashboardController {
     private void initialize() {
         dbManager = DatabaseManager.getInstance();
         currentUser = SessionManager.getInstance().getCurrentUser();
+
+        if (currentUser == null || !currentUser.isAdmin()) {
+            AlertMessage.showError("Access Denied", "Admin privileges required");
+            try {
+                COMSATSTransport.showLoginScreen();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         welcomeLabel.setText("Admin: " + currentUser.getName());
         emailLabel.setText(currentUser.getEmail());

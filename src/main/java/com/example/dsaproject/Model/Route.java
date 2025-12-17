@@ -1,26 +1,27 @@
 package com.example.dsaproject.Model;
 
-import java.util.List;
-import java.util.ArrayList;
-
-/**
- * Route Model Class
- * Represents a bus route with stops
- */
 public class Route {
     private int routeId;
     private String routeName;
     private int totalStops;
-    private List<String> stops;
-    private String status;
-    private double distance; // in kilometers
+    private String stops; // Comma-separated stops
+    private int distance;
 
-    public Route(int routeId, String routeName, int totalStops) {
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public Route(int i, String space, int i1) {}
+
+    public Route(int routeId, String routeName, int totalStops, String stops) {
         this.routeId = routeId;
         this.routeName = routeName;
         this.totalStops = totalStops;
-        this.stops = new ArrayList<>();
-        this.status = "Active";
+        this.stops = stops;
     }
 
     // Getters and Setters
@@ -33,33 +34,15 @@ public class Route {
     public int getTotalStops() { return totalStops; }
     public void setTotalStops(int totalStops) { this.totalStops = totalStops; }
 
-    public List<String> getStops() { return stops; }
-    public void setStops(List<String> stops) {
-        this.stops = stops;
-        this.totalStops = stops.size();
-    }
+    public String getStops() { return stops; }
+    public void setStops(String stops) { this.stops = stops; }
 
     public String[] getStopsArray() {
-        return stops.toArray(new String[0]);
-    }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public double getDistance() { return distance; }
-    public void setDistance(double distance) { this.distance = distance; }
-
-    public void addStop(String stop) {
-        stops.add(stop);
-        totalStops = stops.size();
-    }
-
-    public String getStopsString() {
-        return String.join(" → ", stops);
+        return stops != null ? stops.split(",") : new String[0];
     }
 
     @Override
     public String toString() {
-        return routeName + " (" + totalStops + " stops)";
+        return routeName;
     }
 }

@@ -1,37 +1,49 @@
 package com.example.dsaproject.Model;
 
-/**
- * Route Occupancy Report Model
- * Used for analytics and reporting
- */
 public class RouteOccupancy {
+    private int routeId;
     private String routeName;
-    private int totalSeats;
-    private int bookedSeats;
+    private int totalCapacity;
+    private int occupiedSeats;
     private int availableSeats;
 
-    public RouteOccupancy(String routeName, int totalSeats, int bookedSeats) {
+    public RouteOccupancy() {}
+
+    public RouteOccupancy(int routeId, String routeName, int totalCapacity,
+                          int occupiedSeats) {
+        this.routeId = routeId;
         this.routeName = routeName;
-        this.totalSeats = totalSeats;
-        this.bookedSeats = bookedSeats;
-        this.availableSeats = totalSeats - bookedSeats;
+        this.totalCapacity = totalCapacity;
+        this.occupiedSeats = occupiedSeats;
+        this.availableSeats = totalCapacity - occupiedSeats;
     }
 
-    // Getters
+    // Getters and Setters
+    public int getRouteId() { return routeId; }
+    public void setRouteId(int routeId) { this.routeId = routeId; }
+
     public String getRouteName() { return routeName; }
-    public int getTotalSeats() { return totalSeats; }
-    public int getBookedSeats() { return bookedSeats; }
+    public void setRouteName(String routeName) { this.routeName = routeName; }
+
+    public int getTotalCapacity() { return totalCapacity; }
+    public void setTotalCapacity(int totalCapacity) {
+        this.totalCapacity = totalCapacity;
+        this.availableSeats = totalCapacity - occupiedSeats;
+    }
+
+    public int getOccupiedSeats() { return occupiedSeats; }
+    public void setOccupiedSeats(int occupiedSeats) {
+        this.occupiedSeats = occupiedSeats;
+        this.availableSeats = totalCapacity - occupiedSeats;
+    }
+
     public int getAvailableSeats() { return availableSeats; }
 
-    public double getOccupancyPercent() {
-        return totalSeats > 0 ? (bookedSeats * 100.0 / totalSeats) : 0;
+    public double getOccupancyPercentage() {
+        return totalCapacity > 0 ? (occupiedSeats * 100.0) / totalCapacity : 0;
     }
 
-    public String getOccupancyStatus() {
-        double percent = getOccupancyPercent();
-        if (percent >= 90) return "Full";
-        if (percent >= 75) return "High";
-        if (percent >= 50) return "Moderate";
-        return "Low";
+    public boolean hasAvailableSeats() {
+        return availableSeats > 0;
     }
 }

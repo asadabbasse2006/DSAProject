@@ -1,123 +1,197 @@
 package com.example.dsaproject.Dialog;
 
+import com.example.dsaproject.Model.User;
+import com.example.dsaproject.Util.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
-import javafx.collections.FXCollections;
-import com.example.dsaproject.Model.User;
-import com.example.dsaproject.Util.DatabaseManager;
-import com.example.dsaproject.Util.ValidationUtil;
+import javafx.geometry.Pos;
 
+/**
+ * Dialog for student registration
+ * Allows new students to create accounts
+ */
 public class SignupDialog extends Dialog<User> {
 
     private TextField nameField;
     private TextField emailField;
     private PasswordField passwordField;
     private PasswordField confirmPasswordField;
-    private TextField phoneField;
-    private TextArea addressArea;
-    private ComboBox<String> roleCombo;
+    private TextField registrationIdField;
 
     public SignupDialog() {
-        setTitle("Create New Account");
-        setHeaderText("Sign up for COMSATS Transport System");
+        setTitle("Student Registration");
+        setHeaderText("Create New Account");
+        setResizable(false);
 
-        ButtonType signupButtonType = new ButtonType("Sign Up", ButtonBar.ButtonData.OK_DONE);
-        getDialogPane().getButtonTypes().addAll(signupButtonType, ButtonType.CANCEL);
+        // Create the dialog pane
+        DialogPane dialogPane = getDialogPane();
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(12);
-        grid.setPadding(new Insets(20));
+        // Create form
+        GridPane grid = createRegistrationForm();
+        dialogPane.setContent(grid);
 
-        nameField = new TextField();
-        nameField.setPromptText("Full Name");
-        nameField.setPrefWidth(300);
+        // Style the dialog
+        dialogPane.setStyle("-fx-background-color: white;");
 
-        emailField = new TextField();
-        emailField.setPromptText("Email Address");
-
-        passwordField = new PasswordField();
-        passwordField.setPromptText("Password (min 6 characters)");
-
-        confirmPasswordField = new PasswordField();
-        confirmPasswordField.setPromptText("Confirm Password");
-
-        phoneField = new TextField();
-        phoneField.setPromptText("0300-1234567");
-
-        addressArea = new TextArea();
-        addressArea.setPromptText("Your Address");
-        addressArea.setPrefRowCount(2);
-
-        roleCombo = new ComboBox<>();
-        roleCombo.setItems(FXCollections.observableArrayList("Student", "Admin"));
-        roleCombo.setValue("Student");
-
-        grid.add(new Label("Full Name:"), 0, 0);
-        grid.add(nameField, 1, 0);
-        grid.add(new Label("Email:"), 0, 1);
-        grid.add(emailField, 1, 1);
-        grid.add(new Label("Password:"), 0, 2);
-        grid.add(passwordField, 1, 2);
-        grid.add(new Label("Confirm Password:"), 0, 3);
-        grid.add(confirmPasswordField, 1, 3);
-        grid.add(new Label("Phone:"), 0, 4);
-        grid.add(phoneField, 1, 4);
-        grid.add(new Label("Address:"), 0, 5);
-        grid.add(addressArea, 1, 5);
-        grid.add(new Label("Register as:"), 0, 6);
-        grid.add(roleCombo, 1, 6);
-
-        getDialogPane().setContent(grid);
-
+        // Convert result when OK is clicked
         setResultConverter(dialogButton -> {
-            if (dialogButton == signupButtonType) {
-                if (validateInputs()) {
-                    DatabaseManager dbManager = DatabaseManager.getInstance();
-                    if (dbManager.registerUser(
-                            nameField.getText(),
-                            emailField.getText(),
-                            passwordField.getText(),
-                            roleCombo.getValue().toLowerCase())) {
-                        return new User(0, nameField.getText(), emailField.getText(),
-                                roleCombo.getValue().toLowerCase());
-                    }
-                }
+            if (dialogButton == ButtonType.OK) {
+                return validateAndRegister();
             }
             return null;
         });
+
+        // Disable OK button initially
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
+        // Enable OK button when all fields are filled
+        nameField.textProperty().addListener((obs, old, newVal) ->
+                okButton.setDisable(!areAllFieldsFilled()));
+        emailField.textProperty().addListener((obs, old, newVal) ->
+                okButton.setDisable(!areAllFieldsFilled()));
+        passwordField.textProperty().addListener((obs, old, newVal) ->
+                okButton.setDisable(!areAllFieldsFilled()));
+        confirmPasswordField.textProperty().addListener((obs, old, newVal) ->
+                okButton.setDisable(!areAllFieldsFilled()));
+        registrationIdField.textProperty().addListener((obs, old, newVal) ->
+                okButton.setDisable(!areAllFieldsFilled()));
     }
 
-    private boolean validateInputs() {
-        if (!ValidationUtil.isNotEmpty(nameField.getText())) {
-            showError("Please enter your name");
-            return false;
-        }
+    /**
+     * Create registration form layout
+     */
+    private GridPane createRegistrationForm() {
+        GridPane grid = new GridPane();
+        grid.setHgap(15);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(20));
+        grid.setAlignment(Pos.CENTER);
 
-        if (!ValidationUtil.isValidEmail(emailField.getText())) {
-            showError("Please enter a valid email address");
-            return false;
-        }
+        // Name field
+        Label nameLabel = new Label("Full Name:");
+        nameLabel.setStyle("-fx-font-weight: bold;");
+        nameField = new TextField();
+        nameField.setPromptText("Enter your full name");
+        nameField.setPrefWidth(300);
 
-        if (!ValidationUtil.isValidPassword(passwordField.getText())) {
-            showError("Password must be at least 6 characters");
-            return false;
-        }
+        // Email field
+        Label emailLabel = new Label("Email:");
+        emailLabel.setStyle("-fx-font-weight: bold;");
+        emailField = new TextField();
+        emailField.setPromptText("example@comsats.edu.pk");
+        emailField.setPrefWidth(300);
 
-        if (!passwordField.getText().equals(confirmPasswordField.getText())) {
-            showError("Passwords do not match");
-            return false;
-        }
+        // Password field
+        Label passwordLabel = new Label("Password:");
+        passwordLabel.setStyle("-fx-font-weight: bold;");
+        passwordField = new PasswordField();
+        passwordField.setPromptText("Minimum 6 characters");
+        passwordField.setPrefWidth(300);
 
-        return true;
+        // Confirm password field
+        Label confirmPasswordLabel = new Label("Confirm Password:");
+        confirmPasswordLabel.setStyle("-fx-font-weight: bold;");
+        confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Re-enter password");
+        confirmPasswordField.setPrefWidth(300);
+
+        // Registration ID field
+        Label regIdLabel = new Label("Registration ID:");
+        regIdLabel.setStyle("-fx-font-weight: bold;");
+        registrationIdField = new TextField();
+        registrationIdField.setPromptText("e.g., SP24-BSE-082");
+        registrationIdField.setPrefWidth(300);
+
+        // Add fields to grid
+        grid.add(nameLabel, 0, 0);
+        grid.add(nameField, 1, 0);
+        grid.add(emailLabel, 0, 1);
+        grid.add(emailField, 1, 1);
+        grid.add(passwordLabel, 0, 2);
+        grid.add(passwordField, 1, 2);
+        grid.add(confirmPasswordLabel, 0, 3);
+        grid.add(confirmPasswordField, 1, 3);
+        grid.add(regIdLabel, 0, 4);
+        grid.add(registrationIdField, 1, 4);
+
+        // Add info label
+        Label infoLabel = new Label("* All fields are required");
+        infoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
+        grid.add(infoLabel, 0, 5, 2, 1);
+
+        return grid;
     }
 
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Validation Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    /**
+     * Check if all fields are filled
+     */
+    private boolean areAllFieldsFilled() {
+        return !nameField.getText().trim().isEmpty() &&
+                !emailField.getText().trim().isEmpty() &&
+                !passwordField.getText().isEmpty() &&
+                !confirmPasswordField.getText().isEmpty() &&
+                !registrationIdField.getText().trim().isEmpty();
+    }
+
+    /**
+     * Validate input and register user
+     */
+    private User validateAndRegister() {
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+        String registrationId = registrationIdField.getText().trim();
+
+        // Validate name
+        if (!ValidationUtil.isValidName(name)) {
+            AlertMessage.showError("Validation Error",
+                    "Name must be between 2 and 100 characters");
+            return null;
+        }
+
+        // Validate email
+        if (!ValidationUtil.isValidEmail(email)) {
+            AlertMessage.showError("Validation Error",
+                    "Please enter a valid email address\nExample: student@comsats.edu.pk");
+            return null;
+        }
+
+        // Validate password
+        if (!ValidationUtil.isValidPassword(password)) {
+            AlertMessage.showError("Validation Error",
+                    "Password must be at least 6 characters long");
+            return null;
+        }
+
+        // Check password match
+        if (!password.equals(confirmPassword)) {
+            AlertMessage.showError("Validation Error",
+                    "Passwords do not match");
+            return null;
+        }
+
+        // Validate registration ID
+        if (ValidationUtil.isEmpty(registrationId)) {
+            AlertMessage.showError("Validation Error",
+                    "Registration ID is required");
+            return null;
+        }
+
+        // Attempt registration
+        DatabaseManager dbManager = DatabaseManager.getInstance();
+        boolean success = dbManager.registerUser(name, email, password, registrationId);
+
+        if (!success) {
+            AlertMessage.showError("Registration Failed",
+                    "Email already exists or database error.\nPlease try a different email address.");
+            return null;
+        }
+
+        // Return user object on success
+        return new User(0, name, email, "student", registrationId);
     }
 }

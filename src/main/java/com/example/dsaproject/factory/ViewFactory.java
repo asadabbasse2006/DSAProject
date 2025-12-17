@@ -1,322 +1,229 @@
 package com.example.dsaproject.factory;
 
-import javafx.scene.layout.*;
-import javafx.scene.control.*;
-import javafx.geometry.*;
-import javafx.collections.FXCollections;
 import com.example.dsaproject.Model.*;
-import com.example.dsaproject.Util.DatabaseManager;
+import com.example.dsaproject.Util.*;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.geometry.*;
+import javafx.collections.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Factory class for creating Student Dashboard views
+ * Factory for creating student view components
  */
 public class ViewFactory {
 
-    public static VBox createHomeView(User user, DatabaseManager dbManager) {
-        VBox view = new VBox(25);
-        view.setPadding(new Insets(30));
+    /**
+     * Create home/dashboard view
+     */
+    public static VBox createHomeView(User user, DatabaseManager db) {
+        VBox view = new VBox(20);
+        view.setPadding(new Insets(20));
         view.setAlignment(Pos.TOP_CENTER);
 
-        Label title = new Label("Welcome to COMSATS Transport System");
-        title.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2d3748;");
+        // Welcome section
+        Label welcomeLabel = new Label("Welcome to COMSATS Transport System");
+        welcomeLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // Stats Grid
-        GridPane statsGrid = new GridPane();
-        statsGrid.setHgap(25);
-        statsGrid.setVgap(25);
-        statsGrid.setAlignment(Pos.CENTER);
+        Label userInfo = new Label("Student: " + user.getName() + " (" + user.getRegistrationId() + ")");
+        userInfo.setStyle("-fx-font-size: 16px;");
 
-        VBox card1 = createStatCard("Total Routes", String.valueOf(dbManager.getAllRoutes().size()), "🗺️", "#4299e1");
-        VBox card2 = createStatCard("Available Buses", String.valueOf(dbManager.getAllBuses().size()), "🚌", "#48bb78");
-        VBox card3 = createStatCard("Your Bookings", String.valueOf(dbManager.getUserActiveBookings(user.getUserId())), "🎫", "#9f7aea");
-        VBox card4 = createStatCard("Waiting List", String.valueOf(dbManager.getWaitingListCount()), "⏳", "#ed8936");
+        // Stats section
+        HBox statsBox = new HBox(20);
+        statsBox.setAlignment(Pos.CENTER);
 
-        statsGrid.add(card1, 0, 0);
-        statsGrid.add(card2, 1, 0);
-        statsGrid.add(card3, 0, 1);
-        statsGrid.add(card4, 1, 1);
+        int activeBookings = db.getUserActiveBookings(user.getUserId());
+        int totalRoutes = db.getAllRoutes().size();
 
-        // Announcement
-        VBox announcementBox = new VBox(10);
-        announcementBox.setStyle("-fx-background-color: #fff3cd; -fx-padding: 20px; " +
-                "-fx-background-radius: 10px; -fx-border-color: #ffc107; " +
-                "-fx-border-radius: 10px; -fx-border-width: 2px;");
-        announcementBox.setMaxWidth(700);
+        VBox stat1 = createStatCard("Active Bookings", String.valueOf(activeBookings), "#4CAF50");
+        VBox stat2 = createStatCard("Available Routes", String.valueOf(totalRoutes), "#2196F3");
+        VBox stat3 = createStatCard("Total Spent", "Rs. " + db.getUserTotalSpent(user.getUserId()), "#FF9800");
 
-        Label announcementTitle = new Label("📢 Latest Announcements");
-        announcementTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #744210;");
+        statsBox.getChildren().addAll(stat1, stat2, stat3);
 
-        Label announcement1 = new Label("• New route to Sahiwal Airport starting from December 1st");
-        Label announcement2 = new Label("• Online booking now available 24/7");
-        Label announcement3 = new Label("• Special discounts for semester pass holders");
+        // Quick actions
+        Label actionsLabel = new Label("Quick Actions");
+        actionsLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        announcement1.setStyle("-fx-text-fill: #744210;");
-        announcement2.setStyle("-fx-text-fill: #744210;");
-        announcement3.setStyle("-fx-text-fill: #744210;");
+        HBox actionsBox = new HBox(15);
+        actionsBox.setAlignment(Pos.CENTER);
 
-        announcementBox.getChildren().addAll(announcementTitle, announcement1, announcement2, announcement3);
+        Button bookSeatBtn = new Button("Book a Seat");
+        bookSeatBtn.setStyle("-fx-font-size: 14px; -fx-padding: 10 20;");
 
-        view.getChildren().addAll(title, statsGrid, announcementBox);
+        Button viewRoutesBtn = new Button("View Routes");
+        viewRoutesBtn.setStyle("-fx-font-size: 14px; -fx-padding: 10 20;");
+
+        Button myBookingsBtn = new Button("My Bookings");
+        myBookingsBtn.setStyle("-fx-font-size: 14px; -fx-padding: 10 20;");
+
+        actionsBox.getChildren().addAll(bookSeatBtn, viewRoutesBtn, myBookingsBtn);
+
+        view.getChildren().addAll(welcomeLabel, userInfo, new Separator(), statsBox,
+                new Separator(), actionsLabel, actionsBox);
+
         return view;
     }
 
-    public static VBox createRoutesView(DatabaseManager dbManager, Consumer<Route> onQuickBook) {
-        VBox view = new VBox(20);
-        view.setPadding(new Insets(25));
+    /**
+     * Create routes view with table
+     */
+    public static VBox createRoutesView(DatabaseManager db, Consumer<Route> onQuickBook) {
+        VBox view = new VBox(15);
+        view.setPadding(new Insets(20));
 
         Label title = new Label("Available Routes");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2d3748;");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        ListView<Route> routeList = new ListView<>();
-        routeList.setItems(FXCollections.observableArrayList(dbManager.getAllRoutes()));
-        routeList.setCellFactory(param -> new ListCell<Route>() {
+        // Create table
+        TableView<Route> table = new TableView<>();
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Route, Integer> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("routeId"));
+        idCol.setPrefWidth(50);
+
+        TableColumn<Route, String> nameCol = new TableColumn<>("Route Name");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("routeName"));
+        nameCol.setPrefWidth(200);
+
+        TableColumn<Route, Integer> stopsCol = new TableColumn<>("Stops");
+        stopsCol.setCellValueFactory(new PropertyValueFactory<>("totalStops"));
+        stopsCol.setPrefWidth(80);
+
+        TableColumn<Route, String> stopsListCol = new TableColumn<>("Stop List");
+        stopsListCol.setCellValueFactory(new PropertyValueFactory<>("stops"));
+        stopsListCol.setPrefWidth(400);
+
+        TableColumn<Route, Void> actionCol = new TableColumn<>("Action");
+        actionCol.setPrefWidth(100);
+        actionCol.setCellFactory(param -> new TableCell<>() {
+            private final Button bookBtn = new Button("Book");
+            {
+                bookBtn.setOnAction(event -> {
+                    Route route = getTableView().getItems().get(getIndex());
+                    if (onQuickBook != null) {
+                        onQuickBook.accept(route);
+                    }
+                });
+            }
+
             @Override
-            protected void updateItem(Route route, boolean empty) {
-                super.updateItem(route, empty);
-                if (empty || route == null) {
-                    setGraphic(null);
-                } else {
-                    HBox card = createRouteCard(route, dbManager, onQuickBook);
-                    setGraphic(card);
-                }
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : bookBtn);
             }
         });
 
-        view.getChildren().addAll(title, routeList);
-        VBox.setVgrow(routeList, Priority.ALWAYS);
+        table.getColumns().addAll(idCol, nameCol, stopsCol, stopsListCol, actionCol);
+        table.setItems(FXCollections.observableArrayList(db.getAllRoutes()));
+
+        view.getChildren().addAll(title, table);
         return view;
     }
 
-    private static HBox createRouteCard(Route route, DatabaseManager dbManager, Consumer<Route> onQuickBook) {
-        HBox card = new HBox(20);
-        card.setStyle("-fx-background-color: white; -fx-padding: 20px; " +
-                "-fx-background-radius: 10px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
-        card.setAlignment(Pos.CENTER_LEFT);
-
-        VBox info = new VBox(8);
-        Label name = new Label(route.getRouteName());
-        name.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
-        Label stops = new Label(route.getTotalStops() + " stops • " + route.getDistance() + " km");
-        stops.setStyle("-fx-text-fill: #718096;");
-
-        Label stopsList = new Label(route.getStopsString());
-        stopsList.setStyle("-fx-text-fill: #a0aec0; -fx-font-size: 11px;");
-        stopsList.setWrapText(true);
-
-        info.getChildren().addAll(name, stops, stopsList);
-        HBox.setHgrow(info, Priority.ALWAYS);
-
-        Button bookBtn = new Button("Quick Book");
-        bookBtn.setStyle("-fx-background-color: #667eea; -fx-text-fill: white; " +
-                "-fx-padding: 10px 20px; -fx-background-radius: 6px; -fx-cursor: hand;");
-        bookBtn.setOnAction(e -> onQuickBook.accept(route));
-
-        card.getChildren().addAll(info, bookBtn);
-        return card;
-    }
-
-    public static VBox createBookingView(DatabaseManager dbManager, User user, Runnable onComplete) {
+    /**
+     * Create booking view
+     */
+    public static VBox createBookingView(DatabaseManager db, User user, Runnable onComplete) {
         VBox view = new VBox(20);
-        view.setPadding(new Insets(25));
-        view.setAlignment(Pos.TOP_CENTER);
+        view.setPadding(new Insets(20));
+        view.setMaxWidth(600);
 
         Label title = new Label("Book a Seat");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2d3748;");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        VBox formCard = new VBox(18);
-        formCard.setStyle("-fx-background-color: white; -fx-padding: 30px; " +
-                "-fx-background-radius: 12px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
-        formCard.setMaxWidth(600);
+        // Form
+        GridPane form = new GridPane();
+        form.setHgap(15);
+        form.setVgap(15);
 
-        // Route selection
         Label routeLabel = new Label("Select Route:");
-        routeLabel.setStyle("-fx-font-weight: bold;");
         ComboBox<Route> routeCombo = new ComboBox<>();
-        routeCombo.setItems(FXCollections.observableArrayList(dbManager.getAllRoutes()));
-        routeCombo.setPromptText("Choose a route");
-        routeCombo.setMaxWidth(Double.MAX_VALUE);
+        routeCombo.setItems(FXCollections.observableArrayList(db.getAllRoutes()));
+        routeCombo.setPrefWidth(300);
 
-        // Bus selection
         Label busLabel = new Label("Select Bus:");
-        busLabel.setStyle("-fx-font-weight: bold;");
         ComboBox<Bus> busCombo = new ComboBox<>();
-        busCombo.setPromptText("Choose a bus");
-        busCombo.setMaxWidth(Double.MAX_VALUE);
+        busCombo.setPrefWidth(300);
 
         routeCombo.setOnAction(e -> {
             Route selected = routeCombo.getValue();
             if (selected != null) {
-                busCombo.setItems(FXCollections.observableArrayList(
-                        dbManager.getBusesForRoute(selected.getRouteId())));
+                busCombo.setItems(FXCollections.observableArrayList(db.getAllBuses()));
             }
         });
 
-        // Date selection
-        Label dateLabel = new Label("Travel Date:");
-        dateLabel.setStyle("-fx-font-weight: bold;");
-        DatePicker datePicker = new DatePicker();
-        datePicker.setMaxWidth(Double.MAX_VALUE);
-        datePicker.setValue(java.time.LocalDate.now());
-
-        // Priority selection
-        Label priorityLabel = new Label("Priority Level:");
-        priorityLabel.setStyle("-fx-font-weight: bold;");
-        ComboBox<String> priorityCombo = new ComboBox<>();
-        priorityCombo.setItems(FXCollections.observableArrayList(
-                "Normal (3)", "Medium (2)", "High (1)"));
-        priorityCombo.setValue("Normal (3)");
-        priorityCombo.setMaxWidth(Double.MAX_VALUE);
-
         Button bookBtn = new Button("Confirm Booking");
-        bookBtn.setStyle("-fx-background-color: #48bb78; -fx-text-fill: white; " +
-                "-fx-font-size: 14px; -fx-font-weight: bold; " +
-                "-fx-padding: 12px 30px; -fx-background-radius: 8px; -fx-cursor: hand;");
-        bookBtn.setMaxWidth(Double.MAX_VALUE);
-
+        bookBtn.setStyle("-fx-font-size: 14px; -fx-padding: 10 30;");
         bookBtn.setOnAction(e -> {
-            if (routeCombo.getValue() == null || busCombo.getValue() == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setContentText("Please select route and bus");
-                alert.showAndWait();
+            Route route = routeCombo.getValue();
+            Bus bus = busCombo.getValue();
+
+            if (route == null || bus == null) {
+                AlertMessage.showError("Error", "Please select route and bus");
                 return;
             }
 
-            int priority = priorityCombo.getValue().contains("High") ? 1 :
-                    priorityCombo.getValue().contains("Medium") ? 2 : 3;
+            int bookingId = db.createBooking(user.getUserId(), route.getRouteId(), bus.getBusId());
 
-            if (dbManager.createBooking(
-                    user.getUserId(),
-                    busCombo.getValue().getBusId(),
-                    routeCombo.getValue().getRouteId(),
-                    datePicker.getValue().toString(),
-                    priority)) {
-                onComplete.run();
+            if (bookingId > 0) {
+                if (onComplete != null) {
+                    onComplete.run();
+                }
+            } else {
+                AlertMessage.showError("Error", "Failed to create booking");
             }
         });
 
-        formCard.getChildren().addAll(
-                routeLabel, routeCombo,
-                busLabel, busCombo,
-                dateLabel, datePicker,
-                priorityLabel, priorityCombo,
-                bookBtn
-        );
+        form.add(routeLabel, 0, 0);
+        form.add(routeCombo, 1, 0);
+        form.add(busLabel, 0, 1);
+        form.add(busCombo, 1, 1);
+        form.add(bookBtn, 1, 2);
 
-        view.getChildren().addAll(title, formCard);
+        view.getChildren().addAll(title, form);
         return view;
     }
 
-    public static VBox createMyBookingsView(DatabaseManager dbManager, User user, Consumer<Booking> onCancel) {
-        VBox view = new VBox(20);
-        view.setPadding(new Insets(25));
+    /**
+     * Create my bookings view
+     */
+    public static VBox createMyBookingsView(DatabaseManager db, User user, Consumer<Booking> onCancel) {
+        VBox view = new VBox(15);
+        view.setPadding(new Insets(20));
 
         Label title = new Label("My Bookings");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2d3748;");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        TableView<Booking> table = createBookingsTable(dbManager.getUserBookings(user.getUserId()), onCancel);
-
-        view.getChildren().addAll(title, table);
-        VBox.setVgrow(table, Priority.ALWAYS);
-        return view;
-    }
-
-    public static VBox createScheduleView(DatabaseManager dbManager) {
-        VBox view = new VBox(20);
-        view.setPadding(new Insets(25));
-
-        Label title = new Label("Bus Schedule");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2d3748;");
-
-        ListView<String> scheduleList = new ListView<>();
-        scheduleList.setItems(FXCollections.observableArrayList(
-                "🕐 07:00 AM - Main Campus Route - Bus A-123",
-                "🕐 07:30 AM - Railway Station Route - Bus B-456",
-                "🕑 08:00 AM - Sahiwal City Route - Bus C-789",
-                "🕒 08:30 AM - Airport Route - Bus D-101",
-                "🕓 09:00 AM - Hospital Route - Bus E-202",
-                "🕔 01:00 PM - Main Campus Route - Bus A-123",
-                "🕕 02:00 PM - Railway Station Route - Bus B-456",
-                "🕖 03:00 PM - Sahiwal City Route - Bus C-789",
-                "🕗 04:00 PM - Airport Route - Bus D-101",
-                "🕘 05:00 PM - Hospital Route - Bus E-202"
-        ));
-
-        view.getChildren().addAll(title, scheduleList);
-        VBox.setVgrow(scheduleList, Priority.ALWAYS);
-        return view;
-    }
-
-    public static VBox createProfileView(User user, DatabaseManager dbManager) {
-        VBox view = new VBox(25);
-        view.setPadding(new Insets(30));
-        view.setAlignment(Pos.TOP_CENTER);
-
-        Label title = new Label("My Profile");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2d3748;");
-
-        VBox profileCard = new VBox(15);
-        profileCard.setStyle("-fx-background-color: white; -fx-padding: 30px; " +
-                "-fx-background-radius: 12px; -fx-max-width: 500px; " +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
-
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-
-        addProfileRow(grid, 0, "Name:", user.getName());
-        addProfileRow(grid, 1, "Email:", user.getEmail());
-        addProfileRow(grid, 2, "Role:", user.getRole().toUpperCase());
-        addProfileRow(grid, 3, "Phone:", user.getPhone() != null ? user.getPhone() : "Not set");
-        addProfileRow(grid, 4, "Address:", user.getAddress() != null ? user.getAddress() : "Not set");
-
-        profileCard.getChildren().add(grid);
-
-        view.getChildren().addAll(title, profileCard);
-        return view;
-    }
-
-    private static void addProfileRow(GridPane grid, int row, String label, String value) {
-        Label lblLabel = new Label(label);
-        lblLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #4a5568;");
-
-        Label lblValue = new Label(value);
-        lblValue.setStyle("-fx-text-fill: #2d3748;");
-
-        grid.add(lblLabel, 0, row);
-        grid.add(lblValue, 1, row);
-    }
-
-    private static TableView<Booking> createBookingsTable(java.util.List<Booking> bookings, Consumer<Booking> onCancel) {
         TableView<Booking> table = new TableView<>();
-        table.setItems(FXCollections.observableArrayList(bookings));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Booking, Integer> idCol = new TableColumn<>("Booking ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("bookingId"));
 
         TableColumn<Booking, String> routeCol = new TableColumn<>("Route");
-        routeCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getRouteName()));
+        routeCol.setCellValueFactory(new PropertyValueFactory<>("routeName"));
 
         TableColumn<Booking, String> busCol = new TableColumn<>("Bus");
-        busCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getBusNo()));
+        busCol.setCellValueFactory(new PropertyValueFactory<>("busNo"));
 
-        TableColumn<Booking, String> dateCol = new TableColumn<>("Date");
-        dateCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getBookingDate()));
+        TableColumn<Booking, String> seatCol = new TableColumn<>("Seat");
+        seatCol.setCellValueFactory(new PropertyValueFactory<>("seatNo"));
 
         TableColumn<Booking, String> statusCol = new TableColumn<>("Status");
-        statusCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().getStatusBadge()));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         TableColumn<Booking, Void> actionCol = new TableColumn<>("Action");
-        actionCol.setCellFactory(col -> new TableCell<Booking, Void>() {
+        actionCol.setCellFactory(param -> new TableCell<>() {
             private final Button cancelBtn = new Button("Cancel");
             {
-                cancelBtn.setStyle("-fx-background-color: #f56565; -fx-text-fill: white; " +
-                        "-fx-padding: 6px 15px; -fx-background-radius: 5px; -fx-cursor: hand;");
-                cancelBtn.setOnAction(e -> {
+                cancelBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+                cancelBtn.setOnAction(event -> {
                     Booking booking = getTableView().getItems().get(getIndex());
-                    if (!booking.isCancelled()) {
+                    if (onCancel != null) {
                         onCancel.accept(booking);
                     }
                 });
@@ -325,38 +232,102 @@ public class ViewFactory {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    Booking booking = getTableView().getItems().get(getIndex());
-                    setGraphic(booking.isCancelled() ? null : cancelBtn);
-                }
+                setGraphic(empty ? null : cancelBtn);
             }
         });
 
-        table.getColumns().addAll(routeCol, busCol, dateCol, statusCol, actionCol);
-        return table;
+        table.getColumns().addAll(idCol, routeCol, busCol, seatCol, statusCol, actionCol);
+        table.setItems(FXCollections.observableArrayList(db.getUserBookings(user.getUserId())));
+
+        view.getChildren().addAll(title, table);
+        return view;
     }
 
-    private static VBox createStatCard(String title, String value, String icon, String color) {
-        VBox card = new VBox(12);
-        card.setAlignment(Pos.CENTER);
-        card.setStyle("-fx-background-color: white; -fx-padding: 25px; " +
-                "-fx-background-radius: 12px; -fx-pref-width: 200; -fx-pref-height: 160; " +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3); " +
-                "-fx-border-width: 0 0 4 0; -fx-border-color: " + color + "; " +
-                "-fx-border-radius: 12px;");
+    /**
+     * Create schedule view
+     */
+    public static VBox createScheduleView(DatabaseManager db) {
+        VBox view = new VBox(20);
+        view.setPadding(new Insets(20));
 
-        Label iconLabel = new Label(icon);
-        iconLabel.setStyle("-fx-font-size: 42px;");
+        Label title = new Label("Bus Schedules");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        Label info = new Label("All buses depart at 7:30 AM from respective routes");
+        info.setStyle("-fx-font-size: 14px; -fx-text-fill: gray;");
+
+        // Create schedule table
+        TableView<Bus> table = new TableView<>();
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Bus, String> busCol = new TableColumn<>("Bus Number");
+        busCol.setCellValueFactory(new PropertyValueFactory<>("busNo"));
+
+        TableColumn<Bus, Integer> capacityCol = new TableColumn<>("Capacity");
+        capacityCol.setCellValueFactory(new PropertyValueFactory<>("capacity"));
+
+        TableColumn<Bus, String> driverCol = new TableColumn<>("Driver");
+        driverCol.setCellValueFactory(new PropertyValueFactory<>("driverName"));
+
+        table.getColumns().addAll(busCol, capacityCol, driverCol);
+        table.setItems(FXCollections.observableArrayList(db.getAllBuses()));
+
+        view.getChildren().addAll(title, info, table);
+        return view;
+    }
+
+    /**
+     * Create profile view
+     */
+    public static VBox createProfileView(User user, DatabaseManager db) {
+        VBox view = new VBox(20);
+        view.setPadding(new Insets(20));
+        view.setMaxWidth(500);
+
+        Label title = new Label("My Profile");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        GridPane info = new GridPane();
+        info.setHgap(20);
+        info.setVgap(15);
+
+        addInfoRow(info, 0, "Name:", user.getName());
+        addInfoRow(info, 1, "Email:", user.getEmail());
+        addInfoRow(info, 2, "Registration ID:", user.getRegistrationId());
+        addInfoRow(info, 3, "Role:", user.getRole());
+        addInfoRow(info, 4, "Total Bookings:", String.valueOf(db.getUserActiveBookings(user.getUserId())));
+        addInfoRow(info, 5, "Total Spent:", "Rs. " + db.getUserTotalSpent(user.getUserId()));
+
+        view.getChildren().addAll(title, new Separator(), info);
+        return view;
+    }
+
+    // Helper methods
+    private static VBox createStatCard(String label, String value, String color) {
+        VBox card = new VBox(10);
+        card.setAlignment(Pos.CENTER);
+        card.setPadding(new Insets(20));
+        card.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10;");
+        card.setPrefWidth(200);
 
         Label valueLabel = new Label(value);
-        valueLabel.setStyle("-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        valueLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #718096;");
+        Label labelLabel = new Label(label);
+        labelLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: white;");
 
-        card.getChildren().addAll(iconLabel, valueLabel, titleLabel);
+        card.getChildren().addAll(valueLabel, labelLabel);
         return card;
+    }
+
+    private static void addInfoRow(GridPane grid, int row, String label, String value) {
+        Label labelNode = new Label(label);
+        labelNode.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        Label valueNode = new Label(value != null ? value : "N/A");
+        valueNode.setStyle("-fx-font-size: 14px;");
+
+        grid.add(labelNode, 0, row);
+        grid.add(valueNode, 1, row);
     }
 }
