@@ -53,7 +53,7 @@ public class COMSATSTransport extends Application {
         primaryStage.setScene(scene);
 
         // Resize window exactly to FXML layout size (fixes "too large screen" issue)
-        primaryStage.sizeToScene();
+        primaryStage.centerOnScreen();
     }
 
     /**
@@ -66,6 +66,7 @@ public class COMSATSTransport extends Application {
         primaryStage.setScene(scene);
         primaryStage.setWidth(1280);
         primaryStage.setHeight(750);
+        primaryStage.centerOnScreen();
     }
 
     /**
@@ -77,6 +78,7 @@ public class COMSATSTransport extends Application {
         primaryStage.setScene(scene);
         primaryStage.setWidth(1280);
         primaryStage.setHeight(750);
+        primaryStage.centerOnScreen();
     }
 
     /**

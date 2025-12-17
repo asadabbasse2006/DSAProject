@@ -1,235 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- ========================================================================== -->
-<!-- FILE: AdminDashboard.fxml -->
-<!-- Location: src/main/resources/fxml/AdminDashboard.fxml -->
-<!-- Description: Admin dashboard with full management capabilities -->
-<!-- ========================================================================== -->
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.dsaproject.Controllers.adminDashboardController"
-            styleClass="dashboard-root">
+            prefHeight="750" prefWidth="1280">
 
-    <!-- Top Navigation Bar -->
+    <!-- Top Header -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="admin-header">
-            <padding>
-                <Insets top="15" right="25" bottom="15" left="25"/>
-            </padding>
+        <VBox style="-fx-background-color: #673AB7; -fx-padding: 15;">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="COMSATS Transport - Admin Panel"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
 
-            <!-- Logo/Title -->
-            <VBox spacing="2">
-                <Label text="⚙️ COMSATS Transport" styleClass="dashboard-logo">
-                    <font>
-                        <Font name="System Bold" size="18"/>
-                    </font>
-                </Label>
-                <Label text="Admin Control Panel" styleClass="dashboard-subtitle">
-                    <font>
-                        <Font size="11"/>
-                    </font>
-                </Label>
-            </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
 
-            <!-- Spacer -->
-            <Region HBox.hgrow="ALWAYS"/>
+                <VBox alignment="CENTER_RIGHT">
+                    <Label fx:id="welcomeLabel" text="Admin"
+                           style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label fx:id="emailLabel" text="admin@comsats.edu.pk"
+                           style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                </VBox>
 
-            <!-- Admin Info -->
-            <VBox alignment="CENTER_RIGHT" spacing="2">
-                <Label fx:id="welcomeLabel" text="Admin User" styleClass="welcome-label">
-                    <font>
-                        <Font name="System Bold" size="13"/>
-                    </font>
-                </Label>
-                <Label fx:id="emailLabel" text="admin@comsats.edu.pk" styleClass="email-label">
-                    <font>
-                        <Font size="11"/>
-                    </font>
-                </Label>
-            </VBox>
+                <Button text="Logout" onAction="#handleLogout"
+                        style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 8 20;"/>
+            </HBox>
 
-            <!-- Logout Button -->
-            <Button text="Logout" onAction="#handleLogout" styleClass="logout-button">
-                <font>
-                    <Font size="12"/>
-                </font>
-            </Button>
-        </HBox>
+            <!-- Stats Bar -->
+            <HBox spacing="30" alignment="CENTER" style="-fx-padding: 20 0 10 0;">
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Total Routes" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                    <Label fx:id="totalRoutesLabel" text="0"
+                           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL" prefHeight="50" style="-fx-background-color: rgba(255,255,255,0.3);"/>
+
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Total Buses" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                    <Label fx:id="totalBusesLabel" text="0"
+                           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL" prefHeight="50" style="-fx-background-color: rgba(255,255,255,0.3);"/>
+
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Total Drivers" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                    <Label fx:id="totalDriversLabel" text="0"
+                           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL" prefHeight="50" style="-fx-background-color: rgba(255,255,255,0.3);"/>
+
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Active Bookings" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                    <Label fx:id="activeBookingsLabel" text="0"
+                           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                </VBox>
+            </HBox>
+        </VBox>
     </top>
 
     <!-- Left Sidebar -->
     <left>
-        <VBox spacing="8" styleClass="sidebar-admin" minWidth="220" maxWidth="220">
-            <padding>
-                <Insets top="25" right="15" bottom="25" left="15"/>
-            </padding>
+        <VBox spacing="5" style="-fx-background-color: #263238; -fx-padding: 20 0; -fx-pref-width: 220;">
 
-            <!-- Dashboard Section -->
-            <Label text="OVERVIEW" styleClass="sidebar-section-title">
-                <font>
-                    <Font name="System Bold" size="11"/>
-                </font>
-            </Label>
+            <Label text="ADMIN MENU" style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 11px; -fx-padding: 10 20;"/>
 
-            <Button fx:id="dashboardBtn" text="📊  Dashboard" onAction="#showDashboard"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Button fx:id="dashboardBtn" text="📊  Dashboard" onAction="#showDashboard" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <Button fx:id="reportsBtn" text="📈  Reports" onAction="#showReports"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Separator style="-fx-background-color: rgba(255,255,255,0.1); -fx-padding: 5 0;"/>
 
-            <Separator/>
+            <Label text="MANAGEMENT" style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 11px; -fx-padding: 10 20;"/>
 
-            <!-- Management Section -->
-            <Label text="MANAGEMENT" styleClass="sidebar-section-title">
-                <font>
-                    <Font name="System Bold" size="11"/>
-                </font>
-                <padding>
-                    <Insets top="10"/>
-                </padding>
-            </Label>
+            <Button fx:id="routesBtn" text="🚏  Routes" onAction="#showRoutes" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <Button fx:id="routesBtn" text="🗺️  Routes" onAction="#showRoutes"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Button fx:id="busesBtn" text="🚌  Buses" onAction="#showBuses" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <Button fx:id="busesBtn" text="🚌  Buses" onAction="#showBuses"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Button fx:id="driversBtn" text="👨  Drivers" onAction="#showDrivers" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <Button fx:id="driversBtn" text="👤  Drivers" onAction="#showDrivers"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Separator style="-fx-background-color: rgba(255,255,255,0.1); -fx-padding: 5 0;"/>
 
-            <Button fx:id="usersBtn" text="👥  Users" onAction="#showUsers"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Label text="OPERATIONS" style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 11px; -fx-padding: 10 20;"/>
 
-            <Separator/>
+            <Button fx:id="bookingsBtn" text="📋  Bookings" onAction="#showBookings" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <!-- Operations Section -->
-            <Label text="OPERATIONS" styleClass="sidebar-section-title">
-                <font>
-                    <Font name="System Bold" size="11"/>
-                </font>
-                <padding>
-                    <Insets top="10"/>
-                </padding>
-            </Label>
+            <Button fx:id="waitingListBtn" text="⏳  Waiting List" onAction="#showWaitingList" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <Button fx:id="bookingsBtn" text="📋  Bookings" onAction="#showBookings"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Button fx:id="usersBtn" text="👥  Users" onAction="#showUsers" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
 
-            <Button fx:id="waitingListBtn" text="⏳  Waiting List" onAction="#showWaitingList"
-                    styleClass="sidebar-button" maxWidth="Infinity" alignment="CENTER_LEFT">
-                <font>
-                    <Font size="13"/>
-                </font>
-            </Button>
+            <Separator style="-fx-background-color: rgba(255,255,255,0.1); -fx-padding: 5 0;"/>
 
-            <!-- Spacer -->
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <!-- Quick Stats -->
-            <Separator/>
-            <Label text="SYSTEM STATS" styleClass="sidebar-section-title">
-                <font>
-                    <Font name="System Bold" size="11"/>
-                </font>
-                <padding>
-                    <Insets top="10"/>
-                </padding>
-            </Label>
-
-            <GridPane hgap="10" vgap="8" styleClass="stats-box">
-                <padding>
-                    <Insets top="12" right="12" bottom="12" left="12"/>
-                </padding>
-
-                <Label text="Routes:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="stat-label">
-                    <font>
-                        <Font size="11"/>
-                    </font>
-                </Label>
-                <Label fx:id="totalRoutesLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="stat-value">
-                    <font>
-                        <Font name="System Bold" size="11"/>
-                    </font>
-                </Label>
-
-                <Label text="Buses:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="stat-label">
-                    <font>
-                        <Font size="11"/>
-                    </font>
-                </Label>
-                <Label fx:id="totalBusesLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="stat-value">
-                    <font>
-                        <Font name="System Bold" size="11"/>
-                    </font>
-                </Label>
-
-                <Label text="Drivers:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="stat-label">
-                    <font>
-                        <Font size="11"/>
-                    </font>
-                </Label>
-                <Label fx:id="totalDriversLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="stat-value">
-                    <font>
-                        <Font name="System Bold" size="11"/>
-                    </font>
-                </Label>
-
-                <Label text="Active:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="stat-label">
-                    <font>
-                        <Font size="11"/>
-                    </font>
-                </Label>
-                <Label fx:id="activeBookingsLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="stat-value">
-                    <font>
-                        <Font name="System Bold" size="11"/>
-                    </font>
-                </Label>
-            </GridPane>
+            <Button fx:id="reportsBtn" text="📈  Reports" onAction="#showReports" maxWidth="Infinity"
+                    styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 12 20; -fx-font-size: 14px; -fx-cursor: hand;"/>
         </VBox>
     </left>
 
     <!-- Center Content Area -->
     <center>
-        <StackPane fx:id="contentArea" styleClass="content-area">
+        <StackPane fx:id="contentArea" style="-fx-background-color: #f5f5f5;">
             <padding>
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
-            <!-- Dynamic content loaded here -->
         </StackPane>
     </center>
 </BorderPane>

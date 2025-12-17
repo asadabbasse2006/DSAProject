@@ -5,6 +5,7 @@ import com.example.dsaproject.Model.Driver;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class DatabaseManager {
@@ -217,7 +218,7 @@ public class DatabaseManager {
             }
 
             // Insert sample buses
-            String insertBusSql = "INSERT INTO buses (bus_no, capacity, driver_id) VALUES (?, ?, ?)";
+            String insertBusSql = "INSERT INTO buses (bus_no, capacity, drivers_id) VALUES (?, ?, ?)";
             try (PreparedStatement busStmt = connection.prepareStatement(insertBusSql)) {
                 String[][] buses = {
                         {"A-123", "40", "1"},
@@ -571,7 +572,7 @@ public class DatabaseManager {
     public List<Bus> getAllBuses() {
         List<Bus> buses = new ArrayList<>();
         String sql = "SELECT b.*, d.name as driver_name FROM buses b " +
-                "LEFT JOIN drivers d ON b.driver_id = d.id " +
+                "LEFT JOIN drivers d ON b.drivers_id = d.drivers_id " +
                 "WHERE b.status = 'Active'";
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -581,7 +582,7 @@ public class DatabaseManager {
                         rs.getInt("id"),
                         rs.getString("bus_no"),
                         rs.getInt("capacity"),
-                        rs.getInt("driver_id"),
+                        rs.getInt("drivers_id"),
                         rs.getString("driver_name")
                 );
                 bus.setStatus(rs.getString("status"));
@@ -634,7 +635,7 @@ public class DatabaseManager {
     }
 
     public boolean updateBus(Bus bus) {
-        String sql = "UPDATE buses SET bus_no = ?, capacity = ?, driver_id = ? WHERE id = ?";
+        String sql = "UPDATE buses SET bus_no = ?, capacity = ?, drivers_id = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, bus.getBusNo());
             stmt.setInt(2, bus.getCapacity());
@@ -676,8 +677,8 @@ public class DatabaseManager {
                 Driver driver = new Driver(
                         rs.getInt("drivers_id"),
                         rs.getString("name"),
-                        rs.getString("phoneNo"),
-                        rs.getString("licenseNo")
+                        rs.getString("phone"),
+                        rs.getString("license_no")
                 );
                 driver.setEmail(rs.getString("email"));
                 driver.setExperience(rs.getInt("experience"));
@@ -746,6 +747,7 @@ public class DatabaseManager {
                 "LEFT JOIN buses bus ON b.bus_id = bus.id " +
                 "LEFT JOIN routes r ON b.route_id = r.id " +
                 "ORDER BY b.created_at DESC";
+
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -1014,15 +1016,17 @@ public class DatabaseManager {
     public List<RouteOccupancy> getRouteOccupancyReport() {
         List<RouteOccupancy> report = new ArrayList<>();
         String sql = "SELECT r.route_name, " +
-                "COALESCE(SUM(bus.capacity), 0) as total_seats, " +
-                "COUNT(DISTINCT b.id) as booked_seats " +
+                "COALESCE(SUM(bus.capacity), 0) AS total_seats, " +
+                "COUNT(DISTINCT book.id) AS booked_seats " +
                 "FROM routes r " +
                 "LEFT JOIN bookings book ON r.id = book.route_id AND book.status = 'confirmed' " +
                 "LEFT JOIN buses bus ON book.bus_id = bus.id " +
                 "WHERE r.status = 'Active' " +
                 "GROUP BY r.id, r.route_name";
+
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
                 report.add(new RouteOccupancy(
                         rs.getString("route_name"),
@@ -1030,11 +1034,12 @@ public class DatabaseManager {
                         rs.getInt("booked_seats")
                 ));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Add sample data if empty
+        // Sample data fallback
         if (report.isEmpty()) {
             report.add(new RouteOccupancy("Main Campus Route", 120, 102));
             report.add(new RouteOccupancy("Railway Station Route", 80, 65));
@@ -1044,6 +1049,7 @@ public class DatabaseManager {
 
         return report;
     }
+
 
     // ========================================
     // USER MANAGEMENT
@@ -1118,6 +1124,11 @@ public class DatabaseManager {
 
     public Connection getConnection() {
         return connection;
+    }
+
+    public Collection<? extends WaitingListEntry> getAllWaitingList() {
+
+        return List.of();
     }
 }
 
